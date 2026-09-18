@@ -14,15 +14,16 @@ Document at least 3 bugs you found. Add rows as needed.
 
 | Input | Expected Behavior | Actual Behavior | Console Output / Error |
 |-------|-------------------|-----------------|------------------------|
-| | | | |
-| | | | |
-| | | | |
+|   15  |  GO HIGHER          GO LOWER          Wrong logical output
+| NEW GAME| Game restart    |    Stuck        | You already won. Start a new game to play again.
+|    20   | GO HIGHER         Go LOWER!         Wrong logical output
 
 ---
 
 ## 2. How did you use AI as a teammate?
 
 - Which AI tools did you use on this project (for example: ChatGPT, Gemini, Copilot)?
+  claude
 - Give one example of an AI suggestion that was correct (including what the AI suggested and how you verified the result).
 - Give one example of an AI suggestion that was incorrect or misleading (including what the AI suggested and how you verified the result).
 
