@@ -11,6 +11,9 @@ DIFFICULTY_RANGES = {
 
 DEFAULT_RANGE = (1, 100)
 
+# FIX: the original code paired "Too High" with "Go HIGHER!" and "Too Low" with
+# "Go LOWER!", sending the player the wrong way. Reversed with agent mode and
+# locked in by regression tests in tests/test_game_logic.py.
 HINT_MESSAGES = {
     "Win": "🎉 Correct!",
     "Too High": "📉 Go LOWER!",
@@ -32,6 +35,7 @@ def parse_guess(raw: str):
     if raw is None:
         return False, None, "Enter a guess."
 
+    # FIX: added .strip() with agent mode so " 42 " parses instead of erroring.
     raw = raw.strip()
 
     if raw == "":
@@ -42,6 +46,9 @@ def parse_guess(raw: str):
             value = int(float(raw))
         else:
             value = int(raw)
+    # FIX: narrowed from a bare `except Exception`, but OverflowError must stay —
+    # int(float("inf")) raises it, and catching only ValueError crashed the app on
+    # input like "inf" or "1e400". Caught by edge-case testing during agent mode.
     except (ValueError, OverflowError):
         return False, None, "That is not a number."
 
@@ -54,6 +61,11 @@ def check_guess(guess, secret):
 
     Returns one of: "Win", "Too High", "Too Low"
     """
+    # FIX: the original wrapped this in try/except TypeError and fell back to
+    # comparing str(guess) against secret, which hid the type bug behind silently
+    # wrong alphabetical results. Fallback deleted with agent mode; both values
+    # are now always ints, and the return is a plain outcome string so the
+    # existing tests in tests/test_game_logic.py pass unmodified.
     if guess == secret:
         return "Win"
 

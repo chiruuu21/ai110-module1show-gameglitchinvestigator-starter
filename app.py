@@ -1,6 +1,7 @@
 import random
 import streamlit as st
 
+# FIX: Refactored the four core logic functions into logic_utils.py using agent mode.
 from logic_utils import (
     check_guess,
     get_range_for_difficulty,
@@ -38,6 +39,8 @@ if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
 
 if "attempts" not in st.session_state:
+    # FIX: was 1, which burned an attempt before the first guess and disagreed
+    # with New Game's reset to 0. Off-by-one spotted by agent mode during review.
     st.session_state.attempts = 0
 
 if "score" not in st.session_state:
@@ -49,6 +52,7 @@ if "status" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = []
 
+# FIX: added with agent mode so New Game can clear the guess box (see key= below).
 if "game_id" not in st.session_state:
     st.session_state.game_id = 0
 
@@ -68,6 +72,8 @@ with st.expander("Developer Debug Info"):
 
 raw_guess = st.text_input(
     "Enter your guess:",
+    # FIX: game_id added to the key with agent mode; a changed key makes Streamlit
+    # treat this as a new widget, so the old guess doesn't linger after New Game.
     key=f"guess_input_{difficulty}_{st.session_state.game_id}",
 )
 
@@ -80,6 +86,11 @@ with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
 if new_game:
+    # FIX: New Game used to reset only attempts and secret, never status. After a
+    # win/loss the rerun hit the status guard below and st.stop(), freezing the app.
+    # Diagnosed with agent mode and confirmed with a Streamlit AppTest script.
+    # FIX: secret now drawn from (low, high) instead of a hardcoded 1-100, which
+    # ignored difficulty and could pick a secret outside the Easy/Hard range.
     st.session_state.secret = random.randint(low, high)
     st.session_state.attempts = 0
     st.session_state.score = 0
@@ -89,6 +100,9 @@ if new_game:
     st.session_state.new_game_started = True
     st.rerun()
 
+# FIX: st.success() used to run just before st.rerun(), which discards everything
+# drawn so far, so the message was never visible. Agent mode suggested deferring it
+# via a session flag; pop() reads and clears it so it shows exactly once.
 if st.session_state.pop("new_game_started", False):
     st.success("New game started.")
 
@@ -110,6 +124,9 @@ if submit:
     else:
         st.session_state.history.append(guess_int)
 
+        # FIX: the secret used to be cast with str() on even-numbered attempts,
+        # forcing alphabetical comparison ("9" > "100"), so hints flipped on half
+        # the guesses. Cast removed with agent mode; always compare int to int.
         outcome = check_guess(guess_int, st.session_state.secret)
 
         if show_hint:
