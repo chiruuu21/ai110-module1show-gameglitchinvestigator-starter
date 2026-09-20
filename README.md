@@ -135,23 +135,6 @@ tests/test_game_logic.py .......                                         [100%]
 ============================== 7 passed in 0.02s ===============================
 ```
 
-The 7 tests are the 3 provided with the assignment plus 4 regression tests added
-for the bugs fixed above:
-
-| Test | What it guards |
-|------|----------------|
-| `test_winning_guess` | A matching guess returns `"Win"`. |
-| `test_guess_too_high` | A guess above the secret returns `"Too High"`. |
-| `test_guess_too_low` | A guess below the secret returns `"Too Low"`. |
-| `test_too_high_hint_tells_player_to_go_lower` | "Too High" shows "Go LOWER!", not "Go HIGHER!". |
-| `test_too_low_hint_tells_player_to_go_higher` | "Too Low" shows "Go HIGHER!", not "Go LOWER!". |
-| `test_hints_for_opposite_outcomes_are_different` | The two directions never collapse to the same message. |
-| `test_guess_compared_as_number_not_as_text` | `check_guess(9, 100)` is "Too Low" — numeric comparison, not alphabetical. |
-
-The four regression tests were validated by running them against a reconstruction
-of the original buggy logic: three of them failed on it and pass on the fixed code,
-which is what makes them meaningful rather than decorative.
-
 ## 🚀 Stretch Features
 
 - [ ] [If you choose to complete Challenge 4, describe the Enhanced UI changes here — a screenshot is optional]
